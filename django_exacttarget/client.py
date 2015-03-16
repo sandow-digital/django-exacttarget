@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from FuelSDK import ET_Client, ET_Subscriber
+from FuelSDK import ET_Client, ET_Subscriber, ET_List
 
 
 SUBSCRIBER_EXISTS_ERROR_CODE = 12014
@@ -21,6 +21,14 @@ class ETClient(ET_Client):
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
 
+
+    def get_lists(self):
+        lists = ET_List()
+        lists.auth_stub = self
+        lists.props = ["ID", "ListName"]
+        lists.get()
+
+        return lists
 
     def add_subscriber(self, email, list_ids=[], **kwargs):
         properties = {"EmailAddress": email, "SubscriberKey": email}
