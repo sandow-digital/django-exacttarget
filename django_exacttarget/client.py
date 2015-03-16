@@ -5,7 +5,7 @@ from FuelSDK import ET_Client, ET_Subscriber
 
 SUBSCRIBER_EXISTS_ERROR_CODE = 12014
 
-class FuelClient(ET_Client):
+class ETClient(ET_Client):
     def __init__(self):
 
         params = {
@@ -31,9 +31,9 @@ class FuelClient(ET_Client):
         if kwargs:
             properties['Attributes'] = []
             for k, v in kwargs.iteritems():
-                if hasattr(settings, AVAILABLE_SUBSCRIBER_PROPERTIES) \
-                    and k not in settings.AVAILABLE_SUBSCRIBER_PROPERTIES:
-                    continue
+                if hasattr(settings, AVAILABLE_SUBSCRIBER_PROPERTIES):
+                    if k not in settings.AVAILABLE_SUBSCRIBER_PROPERTIES:
+                        continue
 
                 if v is not None and v != '':
                     properties['Attributes'].append({
