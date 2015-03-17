@@ -40,11 +40,8 @@ class ETClient(ET_Client):
 
         return list_resp
 
-    def add_subscriber(self, email, list_ids=[], **kwargs):
+    def add_subscriber(self, email, **kwargs):
         properties = {"EmailAddress": email, "SubscriberKey": email}
-
-        if len(list_ids) > 0:
-            properties['Lists'] = [{'ID': x} for x in list_ids]
 
         if kwargs:
             properties['Attributes'] = []
