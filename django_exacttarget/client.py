@@ -93,7 +93,7 @@ class DataExtension(object):
         else:
             self.client = ETClient()
 
-    def add_row(self, name=None, update=False, properties):
+    def add_row(self, properties, name=None, update=False):
         row = ET_DataExtension_Row()
         row.auth_stub = self.client
         row.CustomerKey = name if name else self.name
