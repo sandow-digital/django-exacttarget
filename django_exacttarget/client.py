@@ -40,6 +40,15 @@ class ETClient(ET_Client):
 
         return list_resp
 
+
+    def remove_from_list(self, email, list_id):
+        subscriber = ET_Subscriber()
+        subscriber.auth_stub = self
+        subscriber.props = {'EmailAddress': email, 'ListID': list_id}
+        del_resp = subscriber.delete()
+
+        return del_resp
+
     def add_subscriber(self, email, **kwargs):
         properties = {"EmailAddress": email, "SubscriberKey": email}
 
