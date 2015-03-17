@@ -22,11 +22,12 @@ class ETClient(ET_Client):
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
 
-    def add_to_dataextension(self, de_name, properties, update=False):
+
+    def add_to_dataextension(self, de_name, update=False, **kwargs):
         de_row = ET_DataExtension_Row()
         de_row.CustomerKey = de_name
         de_row.auth_stub = self
-        de_row.props = properties
+        de_row.props = kwargs
         if update:
             de_row_resp = de_row.patch()
         else:
@@ -35,7 +36,6 @@ class ETClient(ET_Client):
         if not de_row_resp.status and not update:
             # try to patch instead
             de_row_resp = de_row.patch()
-
 
         return de_row_resp
 
