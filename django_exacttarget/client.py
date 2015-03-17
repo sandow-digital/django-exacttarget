@@ -70,7 +70,8 @@ class Subscriber(object):
         default_properties = {'EmailAddress': self.email,
             'SubscriberKey': self.email}
 
-        default_properties.update(properties)
+        if properties:
+            default_properties.update(properties)
 
 
         subscriber = ET_Subscriber()
