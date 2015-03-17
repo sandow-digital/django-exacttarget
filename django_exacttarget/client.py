@@ -66,15 +66,16 @@ class Subscriber(object):
         return del_resp
 
 
-    def save(self, attributes=None):
-        properties = {'EmailAddress': self.email,
+    def save(self, properties=None):
+        default_properties = {'EmailAddress': self.email,
             'SubscriberKey': self.email}
-        if attributes:
-            properties['Attributes'] = attributes
+
+        default_properties.update(properties)
+
 
         subscriber = ET_Subscriber()
         subscriber.auth_stub = self.client
-        subscriber.props = properties
+        subscriber.props = default_properties
         sub_response = subscriber.post()
 
         if sub_response.status is False and \
