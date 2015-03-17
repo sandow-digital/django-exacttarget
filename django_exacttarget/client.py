@@ -32,6 +32,15 @@ class ETClient(ET_Client):
         return de_row_resp
 
 
+    def get_rows_from_dataextension(self, de_name, fields):
+        de_rows = ET_DataExtension_Row()
+        de_rows.auth_stub = self
+        de_rows.CustomerKey = de_name
+        de_rows.props = fields
+        de_resp = de_rows.get()
+
+        return de_resp
+
     def get_all_dataextensions(self):
         de = ET_DataExtension()
         de.auth_stub = self
