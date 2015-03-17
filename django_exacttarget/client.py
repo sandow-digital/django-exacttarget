@@ -6,6 +6,7 @@ from FuelSDK import ET_Client, ET_Subscriber, \
 
 SUBSCRIBER_EXISTS_ERROR_CODE = 12014
 
+
 class ETClient(ET_Client):
     def __init__(self):
 
@@ -21,41 +22,6 @@ class ETClient(ET_Client):
 
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
-
-
-    def add_to_dataextension(self, de_name, update=False, **kwargs):
-        de_row = ET_DataExtension_Row()
-        de_row.CustomerKey = de_name
-        de_row.auth_stub = self
-        de_row.props = kwargs
-        if update:
-            de_row_resp = de_row.patch()
-        else:
-            de_row_resp = de_row.post()
-
-        if not de_row_resp.status and not update:
-            # try to patch instead
-            de_row_resp = de_row.patch()
-
-        return de_row_resp
-
-
-    def get_rows_from_dataextension(self, de_name, fields):
-        de_rows = ET_DataExtension_Row()
-        de_rows.auth_stub = self
-        de_rows.CustomerKey = de_name
-        de_rows.props = fields
-        de_resp = de_rows.get()
-
-        return de_resp
-
-    def get_all_dataextensions(self):
-        de = ET_DataExtension()
-        de.auth_stub = self
-        de.props = ['CustomerKey', 'Name']
-        de_resp = de.get()
-
-        return de_resp
 
 
     def get_lists(self):
@@ -77,43 +43,82 @@ class ETClient(ET_Client):
         return list_resp
 
 
-    def remove_subscriber_from_lists(self, email, list_ids):
+class Subscriber(object):
+    def __init__(self, email=None, client=None):
+        self.email = email
+        if client:
+            self.client = client
+        else:
+            self.client = ETClient()
+
+    def fetch(self):
+        if self.email:
+            subscriber = ET_Subscriber()
+            subscriber.auth_stub = self.client
+
+    def remove_from_lists(self, list_ids):
         subscriber = ET_Subscriber()
-        subscriber.auth_stub = self
+        subscriber.auth_stub = self.client
         subscriber.props = {'SubscriberKey': email, 'EmailAddress': email,
             'Lists': [{'ID': x} for x in list_ids]}
         del_resp = subscriber.delete()
 
         return del_resp
 
-    def add_subscriber(self, email, **kwargs):
-        properties = {"EmailAddress": email, "SubscriberKey": email}
 
-        if kwargs:
-            properties['Attributes'] = []
-            for k, v in kwargs.iteritems():
-                if hasattr(settings, 'AVAILABLE_SUBSCRIBER_PROPERTIES') and \
-                    k not in settings.AVAILABLE_SUBSCRIBER_PROPERTIES:
-                    continue
-
-                if v is not None and v != '':
-                    properties['Attributes'].append({
-                        'Name': k,
-                        'Value': v
-                    })
-
+    def save(self, attributes=None):
+        properties = {'EmailAddress': self.email,
+            'SubscriberKey': self.email}
+        if attributes:
+            properties['Attributes'] = attributes
 
         subscriber = ET_Subscriber()
-        subscriber.auth_stub = self
+        subscriber.auth_stub = self.client
         subscriber.props = properties
         sub_response = subscriber.post()
 
         if sub_response.status is False and \
             sub_response.results[0]['ErrorCode'] == SUBSCRIBER_EXISTS_ERROR_CODE:
-            # subscriber already exists, so update instead
-            subscriber = ET_Subscriber()
-            subscriber.auth_stub = self
-            subscriber.props = properties
             sub_response = subscriber.patch()
 
         return sub_response
+
+
+class DataExtension(object):
+    def __init__(self, fields=None, name=None, client=None):
+        self.fields = fields
+        self.name = name
+        if client:
+            self.client = client
+        else:
+            self.client = ETClient()
+
+    def add_row(self, name=None, update=False, properties):
+        row = ET_DataExtension_Row()
+        row.auth_stub = self.client
+        row.CustomerKey = name if name else self.name
+        row.props = properties
+        if update:
+            row_resp = row.patch()
+        else:
+            row_resp = row.post()
+        if not row_resp and not update:
+            # Error and we didn't do an update so
+            # try to patch in case of primary key collision
+            row_resp = row.patch()
+        return row_resp
+
+
+    def get_rows(self, name=None, fields=None):
+        rows = ET_DataExtension_Row()
+        rows.auth_stub = self.client
+        rows.CustomerKey = name if name else self.name
+        rows.props = fields if fields else self.fields
+        return rows.get()
+
+
+    def get_all(self):
+        de = ET_DataExtension()
+        de.auth_stub = self.client
+        de.props = ['CustomerKey', 'Name']
+        return de.get()
