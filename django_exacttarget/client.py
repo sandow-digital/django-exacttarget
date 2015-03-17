@@ -1,6 +1,7 @@
 from django.conf import settings
 
-from FuelSDK import ET_Client, ET_Subscriber, ET_List
+from FuelSDK import ET_Client, ET_Subscriber, \
+    ET_List, ET_DataExtension, ET_DataExtension_Row
 
 
 SUBSCRIBER_EXISTS_ERROR_CODE = 12014
@@ -20,6 +21,24 @@ class ETClient(ET_Client):
 
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
+
+    def add_to_dataextension(self, de_name, properties):
+        de_row = ET_DataExtension_Row()
+        de_row.CustomerKey = de_name
+        de_row.auth_stub = self
+        de_row.props = properties
+        de_row_resp = de_row.post()
+
+        return de_row_resp
+
+
+    def get_all_dataextensions(self):
+        de = ET_DataExtension()
+        de.auth_stub = self
+        de.props = ['CustomerKey', 'Name']
+        de_resp = de.get()
+
+        return de_resp
 
 
     def get_lists(self):
