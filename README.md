@@ -22,11 +22,10 @@ Usage
 =====
 
 ```python
-from django_exacttarget.client import ETClient
+from django_exacttarget.client import Subscriber
 
-client = ETClient()
-
-client.add_subscriber(email='example@test.com', Zip='10031', Lists=[{'ID': 1050},])
+subscriber = Subscriber(email)
+subscriber.save()
 ```
 
 Celery
@@ -52,4 +51,3 @@ properties = {
 
 add_subscriber.apply_async([email, properties], countdown=3)
 ```
-
