@@ -26,9 +26,19 @@ class ETClient(ET_Client):
         lists = ET_List()
         lists.auth_stub = self
         lists.props = ["ID", "ListName"]
-        lists.get()
+        list_resp = lists.get()
 
-        return lists
+        return list_resp
+
+    def get_list_by_name(self, name):
+        lists = ET_List()
+        lists.auth_stub = self
+        lists.props = ["ID", "ListName"]
+        lists.search_filter = {'Property': 'ListName',
+            'SimpleOperator': 'equals', 'Value': name}
+        list_resp = lists.get()
+
+        return list_resp
 
     def add_subscriber(self, email, list_ids=[], **kwargs):
         properties = {"EmailAddress": email, "SubscriberKey": email}
