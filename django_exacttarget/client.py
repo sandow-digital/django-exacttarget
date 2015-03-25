@@ -111,6 +111,17 @@ class DataExtension(object):
         return row_resp
 
 
+    def get_row_by_email(self, email, name=None, fields=None):
+        row = ET_DataExtension_Row()
+        row.auth_stub = self.client
+        row.CustomerKey = name if name else self.name
+        row.props = fields if fields else self.fields
+        row.search_filter = {'Property': 'SubscriberKey',
+            'SimpleOperator': 'equals', 'Value': email}
+
+        return row.get()
+
+
     def get_rows(self, name=None, fields=None):
         rows = ET_DataExtension_Row()
         rows.auth_stub = self.client
