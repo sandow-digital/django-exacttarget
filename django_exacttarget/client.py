@@ -110,6 +110,14 @@ class DataExtension(object):
             row_resp = row.patch()
         return row_resp
 
+    def delete_row(self, properties, name=None):
+        row = ET_DataExtension_Row()
+        row.auth_stub = self.client
+        row.CustomerKey = name if name else self.name
+        row.props = properties
+
+        return row.delete()
+
 
     def get_row_by_email(self, email, name=None, fields=None):
         row = ET_DataExtension_Row()
