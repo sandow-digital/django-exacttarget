@@ -8,7 +8,7 @@ SUBSCRIBER_EXISTS_ERROR_CODE = 12014
 
 
 class ETClient(ET_Client):
-    def __init__(self):
+    def __init__(self, properties=None):
 
         params = {
             'clientid': settings.EXACT_TARGET_CLIENT_ID,
@@ -19,6 +19,9 @@ class ETClient(ET_Client):
                 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'),
             'appsignature': None,
         }
+
+        if properties:
+            params.update(properties)
 
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
