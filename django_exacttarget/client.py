@@ -8,20 +8,20 @@ SUBSCRIBER_EXISTS_ERROR_CODE = 12014
 
 
 class ETClient(ET_Client):
-    def __init__(self, properties=None):
+    def __init__(self, properties=None, client_id=None, client_secret=None):
+
+        clientid = client_id if client_id else settings.EXACT_TARGET_CLIENT_ID
+        clientsecret = client_secret if client_secret else settings.EXACT_TARGET_CLIENT_SECRET
 
         params = {
-            'clientid': settings.EXACT_TARGET_CLIENT_ID,
-            'clientsecret': settings.EXACT_TARGET_CLIENT_SECRET,
+            'clientid': clientid,
+            'clientsecret': clientsecret,
             'defaultwsdl': getattr(settings, 'EXACT_TARGET_WSDL_URL',
                 'https://webservice.exacttarget.com/etframework.wsdl'),
             'authenticationurl': getattr(settings, 'EXACT_TARGET_AUTH_URL',
                 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'),
             'appsignature': None,
         }
-
-        if properties:
-            params.update(properties)
 
         ET_Client.__init__(self, get_server_wsdl=False,
             debug=False, params=params)
@@ -47,12 +47,9 @@ class ETClient(ET_Client):
 
 
 class Subscriber(object):
-    def __init__(self, email=None, client=None):
+    def __init__(self, email=None, client_id=None, client_secret=None):
         self.email = email
-        if client:
-            self.client = client
-        else:
-            self.client = ETClient()
+        self.client = ETClient(client_id=client_id, client_secret=client_secret)
 
     def fetch(self):
         if self.email:
@@ -90,13 +87,10 @@ class Subscriber(object):
 
 
 class DataExtension(object):
-    def __init__(self, fields=None, name=None, client=None):
+    def __init__(self, fields=None, name=None, client_id=None, client_secret=None):
         self.fields = fields
         self.name = name
-        if client:
-            self.client = client
-        else:
-            self.client = ETClient()
+        self.client = ETClient(client_id=client_id, client_secret=client_secret)
 
     def add_row(self, properties, name=None, update=False):
         row = ET_DataExtension_Row()
