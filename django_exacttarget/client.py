@@ -86,7 +86,7 @@ class Subscriber(object):
         return sub_response
 
 class TriggeredSend(object):
-    def __init__(self, client_id=None, client_secert=None):
+    def __init__(self, client_id=None, client_secret=None):
         self.client = ETClient(client_id=client_id, client_secret=client_secret)
 
     def fetch(self, customer_key):
@@ -108,7 +108,7 @@ class TriggeredSend(object):
         resp = ts.send()
 
         return resp
-        
+
 
 class DataExtension(object):
     def __init__(self, fields=None, name=None, client_id=None, client_secret=None):
