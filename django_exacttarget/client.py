@@ -1,7 +1,7 @@
 from django.conf import settings
 
 from FuelSDK import ET_Client, ET_Subscriber, \
-    ET_List, ET_DataExtension, ET_DataExtension_Row
+    ET_List, ET_DataExtension, ET_DataExtension_Row, ET_TriggeredSend
 
 
 SUBSCRIBER_EXISTS_ERROR_CODE = 12014
@@ -85,6 +85,30 @@ class Subscriber(object):
 
         return sub_response
 
+class TriggeredSend(object):
+    def __init__(self, client_id=None, client_secert=None):
+        self.client = ETClient(client_id=client_id, client_secret=client_secret)
+
+    def fetch(self, customer_key):
+        ts = ET_TriggeredSend()
+        ts.auth_stub = self.client
+        ts.props = ["CustomerKey", "Name", "TriggeredSendStatus"]
+        ts.search_filter = {'Property': 'CustomerKey',
+            'SimpleOperator': 'equals', 'Value': customer_key}
+
+        return ts.get()
+
+
+    def send(self, customer_key, subscribers):
+        ts = ET_TriggeredSend()
+        ts.auth_stub = self.client
+        ts.props = {"CustomerKey": customer_key}
+        ts_subscribers = [{"EmailAddress": x, "SubscriberKey": x} for x in subscribers]
+        ts.subscribers = ts_subscribers
+        resp = ts.send()
+
+        return resp
+        
 
 class DataExtension(object):
     def __init__(self, fields=None, name=None, client_id=None, client_secret=None):
