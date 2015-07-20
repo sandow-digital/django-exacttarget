@@ -105,6 +105,7 @@ class TriggeredSend(object):
         ts.props = {"CustomerKey": customer_key}
         ts_subscribers = [{"EmailAddress": x, "SubscriberKey": x} for x in subscribers]
         ts.subscribers = ts_subscribers
+        ts.attributes = None
         resp = ts.send()
 
         return resp
