@@ -1,7 +1,12 @@
-from .client import ETClient, Subscriber, DataExtension
+from .client import ETClient, Subscriber, DataExtension, TriggeredSend
 
 from celery import task
 
+
+@task(name='django_exacttarget.tasks.triggered_send')
+def triggered_send(email, customer_key, client_id=None, client_secret=None):
+    ts_send = TriggeredSend(client_id=None, client_secret=None)
+    ts_send.send(customer_key, [email])
 
 @task(name='django_exacttarget.tasks.add_subscriber')
 def add_subscriber(email, properties=None, client_id=None, client_secret=None):
