@@ -23,3 +23,6 @@ def remove_subscriber_from_lists(email, list_ids, client_id=None, client_secret=
 def add_dataextension_row(name, properties, client_id=None, client_secret=None):
     de = DataExtension(name=name, client_id=client_id, client_secret=client_secret)
     de.add_row(properties)
+
+#@task(name='django_exacttarget.tasks.add_subscriber_doubleoptin')
+#def add_subscriber_doubleoptin(email, properties=None, client_id=None, client_secret=None):

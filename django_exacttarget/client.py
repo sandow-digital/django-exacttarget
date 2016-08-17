@@ -51,10 +51,16 @@ class Subscriber(object):
         self.email = email
         self.client = ETClient(client_id=client_id, client_secret=client_secret)
 
-    def fetch(self):
+    def fetch(self, properties=None):
         if self.email:
+            if not properties:
+                properties = ['EmailAddress', 'SubscriberKey']
             subscriber = ET_Subscriber()
             subscriber.auth_stub = self.client
+            subscriber.props = properties
+            subscriber.search_filter = {'Property' : 'SubscriberKey','SimpleOperator' : 'equals','Value' : self.email}
+
+            return subscriber.get()
 
     def remove_from_lists(self, list_ids):
         subscriber = ET_Subscriber()
