@@ -10,6 +10,6 @@ setup(
     url='https://github.com/snadow-digital/django-exacttarget',
     packages=['django_exacttarget'],
     install_requires=[
-        'FuelSDK',
+        'Salesforce-FuelSDK',
     ]
 )
